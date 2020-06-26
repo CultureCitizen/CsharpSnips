@@ -1,0 +1,69 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace FunctionGui {
+    class StrUtils {
+        public static List<string> csvSplit(string s, char sep, char qual) {
+            List<string> result = new List<string>();
+
+            StringBuilder sb = new StringBuilder();
+            int idx = 0;
+            bool inside = false;
+            bool done = false;
+            while (idx < s.Length) {
+                char c = s[idx];
+                
+                char c2 = (char)(0);
+                if (idx < s.Length - 1) {
+                    c2 = s[idx + 1];
+                }
+                //outside quotes
+                if (inside == false) {
+                    if (c == qual) {
+                        inside = true;
+                        idx++;
+                        sb.Clear();
+                        continue;
+
+                    } else if (c == sep) {
+                        if (done == false) {
+                            result.Add(sb.ToString());
+                        }
+                        idx++;
+                        sb.Clear();
+                        done = false;
+                    } else {
+                        sb.Append(c);
+                        idx++;
+                    }     
+                //inside quotes
+                } else {
+                    //double quotes . Reduce and skip
+                    if (c == qual && c2 == qual) {
+                        idx = idx + 2;
+                        sb.Append(qual);
+
+                        continue;
+                        //end of quotes
+                    } else if (c == qual && c2 != qual) {
+                        result.Add(sb.ToString());
+                        sb.Clear();
+                        inside = false;
+                        done = true;
+                        idx++;
+                    } else {
+                        sb.Append(c);
+                        idx++;
+                    }                    
+                }
+            }
+            if (done == false) {
+                result.Add(sb.ToString());
+            }
+            return result;
+        }
+    }
+}
